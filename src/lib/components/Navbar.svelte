@@ -1,37 +1,40 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
-  import { Wind, CircleDot } from 'lucide-svelte';
+  import { createEventDispatcher } from "svelte";
+  import { Wind, CircleDot } from "lucide-svelte";
 
-  export let activeScene = 'fan'; // 'fan' or 'ball'
+  export let activeScene = "fan"; // 'fan' or 'ball'
 
   const dispatch = createEventDispatcher();
 
   function selectScene(scene) {
     activeScene = scene;
-    dispatch('select', { scene });
+    dispatch("select", { scene });
   }
 </script>
 
 <header class="glass-panel navbar ui-element">
   <div class="brand">
     <div class="glow-indicator"></div>
-    <span class="logo-text">THREE.JS LAB</span>
+    <span class="logo-text">TESTE-JULIA</span>
   </div>
 
   <div class="tabs">
-    <button 
-      class="tab-btn {activeScene === 'fan' ? 'active' : ''}" 
-      on:click={() => selectScene('fan')}
+    <button
+      class="tab-btn {activeScene === 'fan' ? 'active' : ''}"
+      on:click={() => selectScene("fan")}
     >
       <Wind size={18} class="icon {activeScene === 'fan' ? 'spinning' : ''}" />
       <span>Ventilador 3D</span>
     </button>
 
-    <button 
-      class="tab-btn {activeScene === 'ball' ? 'active' : ''}" 
-      on:click={() => selectScene('ball')}
+    <button
+      class="tab-btn {activeScene === 'ball' ? 'active' : ''}"
+      on:click={() => selectScene("ball")}
     >
-      <CircleDot size={18} class="icon {activeScene === 'ball' ? 'pulsing' : ''}" />
+      <CircleDot
+        size={18}
+        class="icon {activeScene === 'ball' ? 'pulsing' : ''}"
+      />
       <span>Bola e Muro</span>
     </button>
   </div>
@@ -120,7 +123,11 @@
   }
 
   @keyframes spin-slow {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 </style>

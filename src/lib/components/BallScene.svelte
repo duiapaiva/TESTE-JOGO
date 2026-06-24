@@ -1,9 +1,9 @@
 <script>
-  import { onMount, onDestroy } from 'svelte';
-  import { createEventDispatcher } from 'svelte';
-  import * as THREE from 'three';
-  import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-  import { Pane } from 'tweakpane';
+  import { onMount, onDestroy } from "svelte";
+  import { createEventDispatcher } from "svelte";
+  import * as THREE from "three";
+  import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+  import { Pane } from "tweakpane";
 
   const dispatch = createEventDispatcher();
 
@@ -28,8 +28,8 @@
     spawnHeight: 1.2,
     ballsPerThrow: 1,
     breakable: true,
-    wallColor: '#ea580c',
-    ballColor: '#ffff00'
+    wallColor: "#ea580c",
+    ballColor: "#ffff00",
   };
 
   // Ball states
@@ -62,7 +62,7 @@
     brickH: 0.18,
     brickD: 0.22,
     spacing: 0.004,
-    zPos: -1.5
+    zPos: -1.5,
   };
 
   // Brick class
@@ -72,14 +72,14 @@
       this.initialPos = initialPos.clone();
       this.row = row;
       this.col = col;
-      
+
       // Physics state
       this.isStatic = true;
       this.pos = initialPos.clone();
       this.vel = new THREE.Vector3();
       this.rot = new THREE.Vector3();
       this.rotVel = new THREE.Vector3();
-      
+
       // Bounding box for collision detection
       this.halfW = wallConfig.brickW / 2;
       this.halfH = wallConfig.brickH / 2;
@@ -92,7 +92,7 @@
       this.vel.set(0, 0, 0);
       this.rot.set(0, 0, 0);
       this.rotVel.set(0, 0, 0);
-      
+
       this.mesh.position.copy(this.initialPos);
       this.mesh.rotation.set(0, 0, 0);
       this.mesh.castShadow = true;
@@ -101,17 +101,17 @@
     activate(impactVel) {
       if (!this.isStatic) return;
       this.isStatic = false;
-      
+
       // Inherit some velocity from the impact, directed slightly outward
       this.vel.copy(impactVel).multiplyScalar(0.25);
       this.vel.y += 1.5 + Math.random() * 2.0; // pop upwards
       this.vel.x += (Math.random() - 0.5) * 2;
-      
+
       // Set random rotation velocity
       this.rotVel.set(
         (Math.random() - 0.5) * 5,
         (Math.random() - 0.5) * 5,
-        (Math.random() - 0.5) * 5
+        (Math.random() - 0.5) * 5,
       );
     }
 
@@ -120,7 +120,7 @@
 
       // Apply gravity
       this.vel.y -= settings.gravity * dt;
-      
+
       // Apply drag
       this.vel.multiplyScalar(1.0 - 0.3 * dt);
       this.rotVel.multiplyScalar(1.0 - 0.5 * dt);
@@ -134,7 +134,7 @@
       if (this.pos.y < floorLevel) {
         this.pos.y = floorLevel;
         this.vel.y = -this.vel.y * 0.25; // bounce a bit
-        
+
         // Horizontal friction
         this.vel.x *= 0.75;
         this.vel.z *= 0.75;
@@ -154,7 +154,7 @@
       this.pos = pos.clone();
       this.vel = vel.clone();
       this.radius = settings.ballSize;
-      
+
       // Visual Squash & Stretch effects
       this.scale = new THREE.Vector3(1, 1, 1);
       this.targetScale = new THREE.Vector3(1, 1, 1);
@@ -166,7 +166,7 @@
 
       // Apply gravity
       this.vel.y -= settings.gravity * dt;
-      
+
       // Apply slight air resistance
       this.vel.multiplyScalar(1.0 - 0.08 * dt);
 
@@ -178,7 +178,7 @@
       if (this.pos.y < floorLevel) {
         this.pos.y = floorLevel;
         this.vel.y = -this.vel.y * settings.restitution;
-        
+
         // Friction on floor
         this.vel.x *= 0.96;
         this.vel.z *= 0.96;
@@ -186,7 +186,7 @@
         // Squash factor on Y axis based on landing velocity
         const squash = Math.max(0.4, 1.0 - Math.abs(this.vel.y) * 0.02);
         this.scale.set(1.2, squash, 1.2);
-        
+
         if (Math.abs(this.vel.y) > 1.5) {
           spawnImpactParticles(this.pos, 0x555555, 8);
         }
@@ -204,14 +204,14 @@
   // Setup the Wall dynamically
   function buildWall() {
     // Clear existing brick meshes and structures
-    bricks.forEach(b => scene.remove(b.mesh));
+    bricks.forEach((b) => scene.remove(b.mesh));
     bricks = [];
 
     const { rows, cols, brickW, brickH, brickD, spacing, zPos } = wallConfig;
     const brickMat = new THREE.MeshStandardMaterial({
       color: new THREE.Color(settings.wallColor),
       roughness: 0.75,
-      metalness: 0.15
+      metalness: 0.15,
     });
 
     const halfWallW = (cols * (brickW + spacing)) / 2;
@@ -226,7 +226,7 @@
         // Handle edge half-bricks for perfect running bond
         let currentW = brickW;
         let xOffset = 0;
-        
+
         if (isOffsetRow) {
           if (c === 0) {
             currentW = brickW / 2;
@@ -242,7 +242,12 @@
         mesh.castShadow = true;
         mesh.receiveShadow = true;
 
-        const posX = -halfWallW + c * (brickW + spacing) + rowOffset + xOffset + brickW / 2;
+        const posX =
+          -halfWallW +
+          c * (brickW + spacing) +
+          rowOffset +
+          xOffset +
+          brickW / 2;
         const posY = r * (brickH + spacing) + brickH / 2;
         const posZ = zPos;
 
@@ -264,15 +269,15 @@
   // Reset the entire scene state
   function resetScene() {
     // Clear active balls
-    balls.forEach(b => scene.remove(b.mesh));
+    balls.forEach((b) => scene.remove(b.mesh));
     balls = [];
 
     // Clear particles
-    particles.forEach(p => scene.remove(p.mesh));
+    particles.forEach((p) => scene.remove(p.mesh));
     particles = [];
 
     // Reset wall bricks
-    bricks.forEach(b => b.reset());
+    bricks.forEach((b) => b.reset());
 
     // Restore preview ball
     if (previewBallMesh) previewBallMesh.visible = true;
@@ -295,7 +300,7 @@
       roughness: 0.08,
       metalness: 0.85,
       emissive: new THREE.Color(settings.ballColor),
-      emissiveIntensity: 0.5
+      emissiveIntensity: 0.5,
     });
     previewBallMesh = new THREE.Mesh(geom, mat);
     // Sit exactly on the floor: y = radius
@@ -303,14 +308,30 @@
     previewBallMesh.castShadow = true;
     scene.add(previewBallMesh);
 
-    previewBallLight = new THREE.PointLight(new THREE.Color(settings.ballColor), 1.5, 5);
+    previewBallLight = new THREE.PointLight(
+      new THREE.Color(settings.ballColor),
+      1.5,
+      5,
+    );
     previewBallLight.position.copy(previewBallMesh.position);
     scene.add(previewBallLight);
   }
 
   // Throw N balls towards the wall from the preview ball position
   function throwBall() {
-    const count = Math.max(1, Math.round(settings.ballsPerThrow));
+    const MAX_BALLS = 5;
+    const requestedCount = Math.max(1, Math.round(settings.ballsPerThrow));
+    const availableSlots = Math.max(0, MAX_BALLS - balls.length);
+    const count = Math.min(requestedCount, availableSlots);
+
+    console.log(
+      "Bolas selecionadas:",
+      settings.ballsPerThrow,
+      "| Bolas que serão criadas:",
+      count,
+    );
+
+    if (count === 0) return;
 
     for (let i = 0; i < count; i++) {
       const geom = new THREE.SphereGeometry(settings.ballSize, 32, 32);
@@ -319,7 +340,7 @@
         roughness: 0.12,
         metalness: 0.7,
         emissive: new THREE.Color(settings.ballColor),
-        emissiveIntensity: 0.2
+        emissiveIntensity: 0.2,
       });
 
       const mesh = new THREE.Mesh(geom, mat);
@@ -328,35 +349,36 @@
       scene.add(mesh);
 
       // Spread spawn positions horizontally when multiple balls
-      const spreadX = count > 1
-        ? ((i / (count - 1)) - 0.5) * 1.5
-        : (Math.random() - 0.5) * 0.2;
+      const spreadX =
+        count > 1 ? (i / (count - 1) - 0.5) * 1.5 : (Math.random() - 0.5) * 0.2;
 
       // Start at floor level (y = radius), same as preview ball
       const initialPos = new THREE.Vector3(
         spreadX,
         settings.ballSize + Math.random() * 0.2,
-        2.2
+        2.2,
       );
 
       // Aim at center of wall with slight random spread
       // Target a point at the middle height of the wall
-      const wallHeight = wallConfig.rows * (wallConfig.brickH + wallConfig.spacing);
-      const targetY = wallHeight * 0.45 + (Math.random() - 0.5) * wallHeight * 0.3;
+      const wallHeight =
+        wallConfig.rows * (wallConfig.brickH + wallConfig.spacing);
+      const targetY =
+        wallHeight * 0.45 + (Math.random() - 0.5) * wallHeight * 0.3;
       const targetX = spreadX * 0.1 + (Math.random() - 0.5) * 1.0;
       const targetZ = wallConfig.zPos;
 
       const dir = new THREE.Vector3(
         targetX - initialPos.x,
         targetY - initialPos.y,
-        targetZ - initialPos.z
+        targetZ - initialPos.z,
       ).normalize();
 
       const velocity = dir.multiplyScalar(settings.throwForce);
       const ball = new Ball(mesh, initialPos, velocity);
       balls.push(ball);
 
-      if (balls.length > 20) {
+      if (balls.length > MAX_BALLS) {
         const oldest = balls.shift();
         scene.remove(oldest.mesh);
       }
@@ -370,7 +392,7 @@
     const rect = renderer.domElement.getBoundingClientRect();
     mouse.set(
       ((event.clientX - rect.left) / rect.width) * 2 - 1,
-      -((event.clientY - rect.top) / rect.height) * 2 + 1
+      -((event.clientY - rect.top) / rect.height) * 2 + 1,
     );
 
     raycaster.setFromCamera(mouse, camera);
@@ -387,7 +409,7 @@
     const mat = new THREE.MeshBasicMaterial({
       color: colorHex,
       transparent: true,
-      opacity: 0.8
+      opacity: 0.8,
     });
 
     for (let i = 0; i < count; i++) {
@@ -398,13 +420,13 @@
       const pVel = new THREE.Vector3(
         (Math.random() - 0.5) * 3,
         Math.random() * 3 + 1, // bounce up
-        (Math.random() - 0.5) * 3
+        (Math.random() - 0.5) * 3,
       );
 
       pGroup.push({
         mesh: pMesh,
         vel: pVel,
-        life: 0.6 + Math.random() * 0.4 // seconds
+        life: 0.6 + Math.random() * 0.4, // seconds
       });
     }
 
@@ -413,7 +435,7 @@
 
   // Custom Physics Collision Solver: Ball vs Bricks
   function checkBallBrickCollisions(ball, dt) {
-    bricks.forEach(brick => {
+    bricks.forEach((brick) => {
       // Skip check if the brick is blown far away
       if (!brick.isStatic && brick.pos.y < -5) return;
 
@@ -439,7 +461,7 @@
       if (sqDist < ball.radius * ball.radius) {
         // Collision detected!
         const dist = Math.sqrt(sqDist);
-        
+
         // Calculate collision normal (pointing from brick to ball)
         const normal = new THREE.Vector3();
         if (dist > 0.001) {
@@ -458,7 +480,7 @@
         if (!brick.isStatic) {
           relativeVel.sub(brick.vel);
         }
-        
+
         const impactSpeed = relativeVel.dot(normal);
 
         // Perform collision response only if moving towards each other
@@ -469,7 +491,7 @@
 
           // Apply slight squash/stretch effect
           ball.scale.set(1.2, 0.8, 1.2);
-          
+
           // Trigger brick activation if breakable
           if (settings.breakable) {
             if (brick.isStatic) {
@@ -478,18 +500,32 @@
               lastImpactSpeed = Math.abs(impactSpeed);
               dispatchTelemetry();
               // Spawn dust particles
-              spawnImpactParticles(new THREE.Vector3(closestX, closestY, closestZ), settings.wallColor, 6);
+              spawnImpactParticles(
+                new THREE.Vector3(closestX, closestY, closestZ),
+                settings.wallColor,
+                6,
+              );
             } else {
               // Push already-activated brick
               brick.vel.addScaledVector(normal, -impulse * 0.4);
-              brick.rotVel.add(new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).multiplyScalar(5));
+              brick.rotVel.add(
+                new THREE.Vector3(
+                  Math.random() - 0.5,
+                  Math.random() - 0.5,
+                  Math.random() - 0.5,
+                ).multiplyScalar(5),
+              );
             }
           } else {
             // Indestructible wall impact
             collisionCount++;
             lastImpactSpeed = Math.abs(impactSpeed);
             dispatchTelemetry();
-            spawnImpactParticles(new THREE.Vector3(closestX, closestY, closestZ), settings.wallColor, 10);
+            spawnImpactParticles(
+              new THREE.Vector3(closestX, closestY, closestZ),
+              settings.wallColor,
+              10,
+            );
           }
         }
       }
@@ -499,19 +535,19 @@
   // Standard boundary limits (prevents balls leaving workspace)
   function checkBoundaryCollisions(ball) {
     const limits = { x: 5, zStart: 5, zEnd: -5 };
-    
+
     // Side walls
     if (Math.abs(ball.pos.x) > limits.x - ball.radius) {
       ball.pos.x = Math.sign(ball.pos.x) * (limits.x - ball.radius);
       ball.vel.x = -ball.vel.x * settings.restitution;
     }
-    
+
     // Front/Back barriers
     if (ball.pos.z > limits.zStart - ball.radius) {
       ball.pos.z = limits.zStart - ball.radius;
       ball.vel.z = -ball.vel.z * settings.restitution;
     }
-    
+
     // If ball flies too deep past the wall
     if (ball.pos.z < limits.zEnd) {
       // Remove the ball to prevent resource leak
@@ -527,20 +563,20 @@
   function updateParticles(dt) {
     const active = [];
 
-    particles.forEach(p => {
+    particles.forEach((p) => {
       p.life -= dt;
       if (p.life > 0) {
         // Gravity
         p.vel.y -= settings.gravity * dt;
         p.mesh.position.addScaledVector(p.vel, dt);
-        
+
         // Fade out
         p.mesh.material.opacity = p.life;
-        
+
         // Spin
         p.mesh.rotation.x += 2 * dt;
         p.mesh.rotation.y += 3 * dt;
-        
+
         active.push(p);
       } else {
         scene.remove(p.mesh);
@@ -553,9 +589,9 @@
   }
 
   function dispatchTelemetry() {
-    dispatch('telemetry', {
+    dispatch("telemetry", {
       collisions: collisionCount,
-      impactSpeed: lastImpactSpeed
+      impactSpeed: lastImpactSpeed,
     });
   }
 
@@ -573,19 +609,20 @@
       previewPulseTime += deltaTime;
       const pulse = 0.88 + Math.sin(previewPulseTime * 2.8) * 0.12;
       previewBallMesh.scale.setScalar(pulse);
-      previewBallMesh.material.emissiveIntensity = 0.25 + Math.sin(previewPulseTime * 2.8) * 0.2;
+      previewBallMesh.material.emissiveIntensity =
+        0.25 + Math.sin(previewPulseTime * 2.8) * 0.2;
       previewBallLight.intensity = 0.8 + Math.sin(previewPulseTime * 2.8) * 0.5;
     }
 
     // 1. Update balls physics and collisions
-    balls.forEach(ball => {
+    balls.forEach((ball) => {
       ball.update(deltaTime);
       checkBallBrickCollisions(ball, deltaTime);
       checkBoundaryCollisions(ball);
     });
 
     // 2. Update dynamic bricks physics
-    bricks.forEach(brick => {
+    bricks.forEach((brick) => {
       brick.update(deltaTime);
     });
 
@@ -600,80 +637,88 @@
   function initTweakpane() {
     pane = new Pane({
       container: paneContainer,
-      title: 'Configurações de Física'
+      title: "Configurações de Física",
     });
 
-    pane.addButton({ title: '🏀 LANÇAR BOLA(S)' }).on('click', () => {
+    pane.addButton({ title: "🏀 LANÇAR BOLA(S)" }).on("click", () => {
       throwBall();
     });
 
-    pane.addButton({ title: '🧱 Reconstruir Muro' }).on('click', () => {
+    pane.addButton({ title: "🧱 Reconstruir Muro" }).on("click", () => {
       resetScene();
     });
 
-    pane.addBinding(settings, 'ballsPerThrow', {
-      label: 'Bolas por Lançamento',
+    pane.addBinding(settings, "ballsPerThrow", {
+      label: "Bolas por Lançamento",
       min: 1,
       max: 5,
-      step: 1
+      step: 1,
     });
 
-    pane.addBinding(settings, 'throwForce', {
-      label: 'Força do Lançamento',
+    pane.addBinding(settings, "throwForce", {
+      label: "Força do Lançamento",
       min: 5.0,
       max: 30.0,
-      step: 1.0
+      step: 1.0,
     });
 
-    pane.addBinding(settings, 'gravity', {
-      label: 'Gravidade (m/s²)',
+    pane.addBinding(settings, "gravity", {
+      label: "Gravidade (m/s²)",
       min: 0,
       max: 25,
-      step: 0.1
+      step: 0.1,
     });
 
-    pane.addBinding(settings, 'restitution', {
-      label: 'Elasticidade',
+    pane.addBinding(settings, "restitution", {
+      label: "Elasticidade",
       min: 0.1,
       max: 1.0,
-      step: 0.05
+      step: 0.05,
     });
 
-    pane.addBinding(settings, 'ballSize', {
-      label: 'Tamanho da Bola',
-      min: 0.1,
-      max: 0.6,
-      step: 0.02
-    }).on('change', (ev) => {
-      // Update existing balls
-      balls.forEach(b => {
-        b.radius = ev.value;
+    pane
+      .addBinding(settings, "ballSize", {
+        label: "Tamanho da Bola",
+        min: 0.1,
+        max: 0.6,
+        step: 0.02,
+      })
+      .on("change", (ev) => {
+        // Update existing balls
+        balls.forEach((b) => {
+          b.radius = ev.value;
+        });
+        // Rebuild preview ball with new size
+        buildPreviewBall();
       });
-      // Rebuild preview ball with new size
-      buildPreviewBall();
-    });
 
-    pane.addBinding(settings, 'breakable', { label: 'Parede Quebrável' }).on('change', () => {
-      resetScene();
-    });
+    pane
+      .addBinding(settings, "breakable", { label: "Parede Quebrável" })
+      .on("change", () => {
+        resetScene();
+      });
 
-    const folderColors = pane.addFolder({ title: 'Estilo Visual' });
+    const folderColors = pane.addFolder({ title: "Estilo Visual" });
 
-    folderColors.addBinding(settings, 'wallColor', { label: 'Cor dos Tijolos' }).on('change', (ev) => {
-      bricks.forEach(b => b.mesh.material.color.set(ev.value));
-    });
+    folderColors
+      .addBinding(settings, "wallColor", { label: "Cor dos Tijolos" })
+      .on("change", (ev) => {
+        bricks.forEach((b) => b.mesh.material.color.set(ev.value));
+      });
 
-    folderColors.addBinding(settings, 'ballColor', { label: 'Cor da Bola' }).on('change', (ev) => {
-      balls.forEach(b => b.mesh.material.color.set(ev.value));
-      // Update preview ball color too
-      if (previewBallMesh) {
-        previewBallMesh.material.color.set(ev.value);
-        previewBallMesh.material.emissive.set(ev.value);
-      }
-      if (previewBallLight) {
-        previewBallLight.color.set(ev.value);
-      }
-    });
+    folderColors
+      .addBinding(settings, "ballColor", { label: "Cor da Bola" })
+      .on("change", (ev) => {
+        balls.forEach((b) => b.mesh.material.color.set(ev.value));
+        // Update preview ball color too
+        if (previewBallMesh) {
+          previewBallMesh.material.color.set(ev.value);
+          previewBallMesh.material.emissive.set(ev.value);
+        }
+        if (previewBallLight) {
+          previewBallLight.color.set(ev.value);
+        }
+      });
   }
 
   onMount(() => {
@@ -687,7 +732,7 @@
       45,
       canvasContainer.clientWidth / canvasContainer.clientHeight,
       0.1,
-      100
+      100,
     );
     camera.position.set(3.5, 2.8, 6.0); // pulled back to frame the larger wall
 
@@ -757,9 +802,9 @@
     buildPreviewBall();
 
     // 8. Event listeners & panel
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     // Click on the 3D preview ball to throw
-    renderer.domElement.addEventListener('click', onCanvasClick);
+    renderer.domElement.addEventListener("click", onCanvasClick);
     initTweakpane();
 
     // 9. Start loop
@@ -776,8 +821,9 @@
 
   onDestroy(() => {
     isDestroyed = true;
-    window.removeEventListener('resize', handleResize);
-    if (renderer) renderer.domElement.removeEventListener('click', onCanvasClick);
+    window.removeEventListener("resize", handleResize);
+    if (renderer)
+      renderer.domElement.removeEventListener("click", onCanvasClick);
     cancelAnimationFrame(animationFrameId);
 
     if (pane) pane.dispose();
@@ -787,7 +833,7 @@
       if (object.geometry) object.geometry.dispose();
       if (object.material) {
         if (Array.isArray(object.material)) {
-          object.material.forEach(mat => mat.dispose());
+          object.material.forEach((mat) => mat.dispose());
         } else {
           object.material.dispose();
         }
